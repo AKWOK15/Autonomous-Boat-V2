@@ -1,0 +1,27 @@
+services:
+  ros-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ros-melodic-dev
+    stdin_open: true
+    tty: true
+    working_dir: /catkin_ws
+    
+    volumes:
+      # Source code - mount all packages
+      - ./src:/catkin_ws/src
+      
+      # Build artifacts (optional but recommended)
+      - ./build:/catkin_ws/build
+      - ./devel:/catkin_ws/devel
+      
+      # Share bash history (nice for development)
+      - ./.bash_history:/root/.bash_history
+    
+    environment:
+      - ROS_HOSTNAME=localhost
+      - ROS_MASTER_URI=http://localhost:11311
+    
+    # Keep container running
+    command: tail -f /dev/null
