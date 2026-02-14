@@ -3,18 +3,23 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: ros-melodic-dev
+    container_name: dev
     stdin_open: true
     tty: true
     working_dir: /catkin_ws
-    
+    devices:
+      #Lidar
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      #Arduino
+      - /dev/ttyACM0:/dev/ttyACM0
     volumes:
       # Source code - mount all packages
-      - ./src:/catkin_ws/src
+      - ./catkin_ws/src:/catkin_ws/src
       
-      # Build artifacts (optional but recommended)
-      - ./build:/catkin_ws/build
-      - ./devel:/catkin_ws/devel
+      # # Build artifacts (optional but recommended)
+      # ./buld is on host, /catkin_ws/build is in container 
+      # - ./build:/catkin_ws/build
+      # - ./devel:/catkin_ws/devel
       
       # Share bash history (nice for development)
       - ./.bash_history:/root/.bash_history

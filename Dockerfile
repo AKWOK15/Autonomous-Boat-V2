@@ -1,13 +1,13 @@
-# Start from ROS Melodic base image, has everything configured 
 FROM arm64v8/ros:melodic-ros-base
-# Set the working directory to the catkin workspace, the root where I run commmands 
 
-# COPY . .
+WORKDIR /catkin_ws
 
-# Install any additional dependencies
-# Install dependencies
+# Install system dependencies INCLUDING pip
 RUN apt-get update && apt-get install -y \
     git \
+    python-pip \
+    python-setuptools \
+    python-wheel \
     python-catkin-tools \
     ros-melodic-tf \
     ros-melodic-tf2 \
@@ -25,27 +25,17 @@ RUN apt-get update && apt-get install -y \
     ros-melodic-message-runtime \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip to latest Python 2.7 compatible version
+RUN pip2 install --upgrade pip setuptools wheel
 
-WORKDIR /catkin_ws
+# Now install the RPLidar package
+RUN pip2 install rplidar-roboticia
 
-# Clone the datmo repository into src
-RUN mkdir -p /catkin_ws/src && \
-    cd /catkin_ws/src && \
-    git clone https://github.com/kostaskonkk/datmo.git
+# Create src directory
+RUN mkdir -p /catkin_ws/src
 
-# Install ROS dependencies for the package
-RUN apt-get update && \
-    rosdep update && \
-    rosdep install --from-paths src --ignore-src -r -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# Build the workspace
-RUN /bin/bash -c "source /opt/ros/melodic/setup.bash && \
-    catkin_make"
-
-# Source ROS setup in bashrc for convenience
+# Source ROS setup in bashrc
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
     echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
 
-# Default command
-CMD ["/bin/bash"]
+CMD ["/bin/bash"]pi
