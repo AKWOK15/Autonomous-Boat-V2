@@ -7,14 +7,22 @@ services:
     stdin_open: true
     tty: true
     working_dir: /catkin_ws
+    #Container same same network as local host
+    #All ports accessible 
+    network_mode: "host"
     devices:
       #Lidar
       - /dev/ttyUSB0:/dev/ttyUSB0
-      #Arduino
-      - /dev/ttyACM0:/dev/ttyACM0
+      # #Arduino
+      # - /dev/ttyACM0:/dev/ttyACM0
     volumes:
       # Source code - mount all packages
       - ./catkin_ws/src:/catkin_ws/src
+      # Creates unix socket, lets Docker container access X11 socket that SSH created
+      # - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./.bashrc:/root/.bashrc
+      # # Authorizes user to use display 
+      # - ~/.Xauthority:/root/.Xauthority:ro
       
       # # Build artifacts (optional but recommended)
       # ./buld is on host, /catkin_ws/build is in container 
@@ -26,7 +34,15 @@ services:
     
     environment:
       - ROS_HOSTNAME=localhost
+      #Tells ROS nodes where ROS master is running, local host means master is running on smae machines, without this, ROs nodes wouldn't know how to find other nodes
       - ROS_MASTER_URI=http://localhost:11311
+      # Tells RViz which X11 server to send graphs to, display 10, screen 0
+      # - DISPLAY=localhost:10.0  # Changed from :10.0
+      # Disable shared memory, RViz uses QT for GUI but I want it to use network-based X11 to send to Mac
+      # - QT_X11_NO_MITSHM=1
+      # forces software rendering, was trying to access GPU
+      # - LIBGL_ALWAYS_INDIRECT=1  
     
     # Keep container running
-    command: tail -f /dev/null
+    # && runs one after other if command succes, & runs in background 
+    command: /bin/bash -c "source /opt/ros/melodic/setup.bash && cd /catkin_ws && catkin_make && source devel/setup.bash && roscore & tail -f /dev/null"

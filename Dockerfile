@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     ros-melodic-roscpp \
     ros-melodic-message-generation \
     ros-melodic-message-runtime \
+    ros-melodic-rviz \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip to latest Python 2.7 compatible version
@@ -31,11 +32,10 @@ RUN pip2 install --upgrade pip setuptools wheel
 # Now install the RPLidar package
 RUN pip2 install rplidar-roboticia
 
-# Create src directory
-RUN mkdir -p /catkin_ws/src
 
-# Source ROS setup in bashrc
-RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
-    echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
 
-CMD ["/bin/bash"]pi
+# # Source ROS setup in bashrc
+# RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc && \
+#     echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+CMD ["/bin/bash"]

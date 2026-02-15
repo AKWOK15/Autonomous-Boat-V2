@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- type is the exectuable -->
+<!-- Output is where data goes, screen = terminal -->
+<!-- pkg is specified in package's xml file -->
+<!-- i get to choose name -->
+
+<launch>
+   <node pkg="rplidar_ros" type="rplidarNode" name="rplidar_ros" output="screen"/>
+   <node pkg="datmo" type="datmo" name="datmo" output="screen"/>
+</launch> 
